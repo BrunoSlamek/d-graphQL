@@ -8,13 +8,25 @@ def test_hello_query():
     client = Client()
     query = '''
         query {
-            hello
+            types {
+                id
+                name
+            }
         }
     '''
     response = client.post('/graphql', {'query': query})
     assert response.status_code == 200
     assert response.json() == {
-        'data': {
-            'hello': 'Hello World! GraphQL with Django!'
+        "data": {
+            "types": [
+              {
+                "id": "5",
+                "name": "test5"
+              },
+              {
+                "id": "6",
+                "name": "test6"
+              }
+            ]
         }
     }
