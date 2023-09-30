@@ -58,3 +58,26 @@ schema = graphene.Schema(query=Query, mutation=Mutation)
     isSuperuser
   }
 } """
+
+
+""" mutation {
+  UpdateType(typeId: 6, name: "Try2") {
+    success
+  }
+}
+ """
+
+"""
+query {
+  types {
+    id
+    name
+    user {
+      id
+      usernameT: username
+      root: isSuperuser
+      dateJoined
+    }
+  }
+}
+"""
