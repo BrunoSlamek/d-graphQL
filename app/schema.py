@@ -3,7 +3,7 @@ import graphene
 from .models import Type
 
 from .graphql.graph_serializers import TypeSerializer
-from .graphql.graph_api import CreateType, DeleteType, Mutation
+from .graphql.graph_api import Mutation
 
 
 class Query(graphene.ObjectType):
