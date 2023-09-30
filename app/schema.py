@@ -12,11 +12,11 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_types(root, info):
-        return Type.objects.filter(is_active=True)
+        return Type.return_all_active()
 
     @staticmethod
     def resolve_type_by_id(root, info, type_id):
-        return Type.objects.get(id=type_id)
+        return Type.get_by_id(type_id=type_id)
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
