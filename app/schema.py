@@ -15,7 +15,7 @@ class Query(graphene.ObjectType):
     users = graphene.List(UserSerializer)
 
     @staticmethod
-    @require_authenticated_user
+    # @require_authenticated_user
     def resolve_types(root, info):
         print(info.context.user)
         return Type.return_all_active()
