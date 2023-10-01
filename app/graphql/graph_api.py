@@ -1,5 +1,6 @@
 import graphene
 from ..models import Type
+from django.contrib.auth.models import User
 
 
 class CreateType(graphene.Mutation):
@@ -14,7 +15,7 @@ class CreateType(graphene.Mutation):
         if Type.objects.filter(name=name, is_active=True).exists():
             return Exception('Already exists!')
         
-        obj = Type(name=name)
+        obj = Type(name=name, user=User.objects.get(id=1))
         obj.save()
 
         return CreateType(name=obj.name)

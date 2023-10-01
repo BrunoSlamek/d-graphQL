@@ -7,28 +7,35 @@ from .graphql.graph_api import Mutation
 from .graphql.helpers.decorators import require_authenticated_user
 
 from django.contrib.auth.models import User
-
+from graphene_django.filter import DjangoFilterConnectionField
 
 class Query(graphene.ObjectType):
     types = graphene.List(TypeSerializer)
     type_by_id = graphene.Field(TypeSerializer, type_id=graphene.ID())
     users = graphene.List(UserSerializer)
+    all_users = DjangoFilterConnectionField(UserSerializer)
 
     @staticmethod
     # @require_authenticated_user
-    def resolve_types(root, info):
+    def resolve_types(root, info, **kwargs):
         print(info.context.user)
+        print(f"test {kwargs}")
         return Type.return_all_active()
 
     @staticmethod
-    @require_authenticated_user
+    # @require_authenticated_user
     def resolve_type_by_id(root, info, type_id):
         return Type.get_by_id(type_id=type_id)
 
     @staticmethod
-    @require_authenticated_user
+    # @require_authenticated_user
     def resolve_users(root, info):
         return User.objects.all()
+    
+    @staticmethod
+    def resolve_all_users(self, info, **kwargs):
+        return User.objects.all()
+
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
 
@@ -81,3 +88,18 @@ query {
   }
 }
 """
+
+""" query {
+  allUsers (isActive: true) {
+    edges {
+      node {
+        id
+        databaseId
+        username
+        email
+        isSuperuser
+        dateJoined
+      }
+    }
+  }
+} """
