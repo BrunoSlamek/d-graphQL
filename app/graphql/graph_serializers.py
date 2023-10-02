@@ -1,5 +1,4 @@
 from graphene_django import DjangoObjectType
-from graphene_django.filter import DjangoFilterConnectionField
 from graphene import relay
 from ..models import Type
 import graphene
@@ -28,4 +27,10 @@ class TypeSerializer(DjangoObjectType):
 
     class Meta:
         model = Type
-        fields = ('id', 'name', 'user')
+        filter_fields = {
+            'id': ['exact'],
+            'name': ['exact', 'istartswith', 'icontains'],
+            'is_active': ['exact'],
+            'user__username': ['exact', 'istartswith']
+        }
+        interfaces = (relay.Node, )

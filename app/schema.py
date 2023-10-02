@@ -1,40 +1,22 @@
 import graphene
 
-from .models import Type
-
 from .graphql.graph_serializers import TypeSerializer, UserSerializer
 from .graphql.graph_api import Mutation
 from .graphql.helpers.decorators import require_authenticated_user
 
-from django.contrib.auth.models import User
 from graphene_django.filter import DjangoFilterConnectionField
 
 class Query(graphene.ObjectType):
-    types = graphene.List(TypeSerializer)
-    type_by_id = graphene.Field(TypeSerializer, type_id=graphene.ID())
-    users = graphene.List(UserSerializer)
+    all_types = DjangoFilterConnectionField(TypeSerializer)
     all_users = DjangoFilterConnectionField(UserSerializer)
-
+    
     @staticmethod
-    # @require_authenticated_user
-    def resolve_types(root, info, **kwargs):
-        print(info.context.user)
-        print(f"test {kwargs}")
-        return Type.return_all_active()
-
-    @staticmethod
-    # @require_authenticated_user
-    def resolve_type_by_id(root, info, type_id):
-        return Type.get_by_id(type_id=type_id)
-
-    @staticmethod
-    # @require_authenticated_user
-    def resolve_users(root, info):
-        return User.objects.all()
+    def resolve_all_types(self, info, **kwargs):
+        return TypeSerializer._meta.model.objects.all()
     
     @staticmethod
     def resolve_all_users(self, info, **kwargs):
-        return User.objects.all()
+        return UserSerializer._meta.model.objects.all()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
@@ -103,3 +85,83 @@ query {
     }
   }
 } """
+
+
+""" query MyT {
+	allTypes (name_Icontains: "T", isActive: true) {
+    edges {
+      node {
+        id
+        name
+      }
+    }
+  }
+  ...x
+}
+
+fragment x on Query {
+  allUsers {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+} """
+
+
+"""
+query MyT {
+	allTypes (user_Username_Istartswith: "A", isActive: true) {
+    edges {
+      node {
+        id
+        name
+      }
+    }
+  }
+  ...x
+}
+
+fragment x on Query {
+  allUsers {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}
+"""
+
+"""
+query MyT {
+	allTypes (user_Username_Istartswith: "A", isActive: true) {
+    edges {
+      node {
+        id
+        name
+        ...u
+      }
+    }
+  }
+  ...x
+}
+
+fragment x on Query {
+  allUsers {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}
+
+fragment u on TypeSerializer {
+  user {
+    id
+    username
+  }
+}
+"""
